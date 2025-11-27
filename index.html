@@ -32,6 +32,202 @@
             overflow-x: hidden;
         }
 
+        /* Navigation Header */
+        .navbar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            box-shadow: 0 2px 20px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .navbar.scrolled {
+            background: rgba(255, 255, 255, 0.98);
+            box-shadow: 0 2px 30px rgba(0, 0, 0, 0.15);
+        }
+
+        .navbar-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .navbar-logo {
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+            transition: transform 0.3s ease;
+        }
+
+        .navbar-logo:hover {
+            transform: scale(1.05);
+        }
+
+        .navbar-logo img {
+            height: 60px;
+            width: auto;
+        }
+
+        .navbar-menu {
+            display: flex;
+            align-items: center;
+            gap: 3rem;
+            list-style: none;
+        }
+
+        .navbar-link {
+            position: relative;
+            color: var(--navy);
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 1rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            transition: color 0.3s ease;
+            cursor: pointer;
+        }
+
+        .navbar-link::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 0;
+            height: 3px;
+            background: var(--bright-blue);
+            transition: width 0.3s ease;
+        }
+
+        .navbar-link:hover {
+            color: var(--bright-blue);
+        }
+
+        .navbar-link:hover::after {
+            width: 100%;
+        }
+
+        .navbar-cta {
+            padding: 0.75rem 2rem;
+            background: var(--bright-blue);
+            color: var(--white);
+            text-decoration: none;
+            border-radius: 50px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            transition: all 0.3s ease;
+            border: 2px solid var(--bright-blue);
+            cursor: pointer;
+        }
+
+        .navbar-cta:hover {
+            background: var(--navy);
+            border-color: var(--navy);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(74, 159, 216, 0.3);
+        }
+
+        /* Mobile Menu Toggle */
+        .navbar-toggle {
+            display: none;
+            flex-direction: column;
+            gap: 5px;
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 5px;
+        }
+
+        .navbar-toggle span {
+            width: 30px;
+            height: 3px;
+            background: var(--navy);
+            transition: all 0.3s ease;
+            border-radius: 3px;
+        }
+
+        .navbar-toggle.active span:nth-child(1) {
+            transform: rotate(45deg) translate(8px, 8px);
+        }
+
+        .navbar-toggle.active span:nth-child(2) {
+            opacity: 0;
+        }
+
+        .navbar-toggle.active span:nth-child(3) {
+            transform: rotate(-45deg) translate(7px, -7px);
+        }
+
+        /* Mobile Responsive */
+        @media (max-width: 768px) {
+            .navbar-container {
+                padding: 1rem;
+            }
+
+            .navbar-logo img {
+                height: 50px;
+            }
+
+            .navbar-toggle {
+                display: flex;
+            }
+
+            .navbar-menu {
+                position: fixed;
+                top: 82px;
+                left: 0;
+                right: 0;
+                background: rgba(255, 255, 255, 0.98);
+                backdrop-filter: blur(10px);
+                flex-direction: column;
+                gap: 0;
+                padding: 2rem;
+                box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+                transform: translateY(-100%);
+                opacity: 0;
+                visibility: hidden;
+                transition: all 0.4s ease;
+            }
+
+            .navbar-menu.active {
+                transform: translateY(0);
+                opacity: 1;
+                visibility: visible;
+            }
+
+            .navbar-menu li {
+                width: 100%;
+                text-align: center;
+                padding: 1rem 0;
+                border-bottom: 1px solid rgba(10, 30, 61, 0.1);
+            }
+
+            .navbar-menu li:last-child {
+                border-bottom: none;
+            }
+
+            .navbar-link {
+                font-size: 1.1rem;
+            }
+
+            .navbar-cta {
+                display: inline-block;
+                margin-top: 1rem;
+            }
+        }
+
+        /* Adjust body padding for fixed navbar */
+        body {
+            padding-top: 82px;
+        }
+
         /* Hero Section */
         .hero {
             position: relative;
@@ -597,6 +793,24 @@
                 };
             }, []);
 
+            // Navbar scroll effect
+            useEffect(() => {
+                const handleScroll = () => {
+                    const navbar = document.getElementById('navbar');
+                    if (window.scrollY > 50) {
+                        navbar.classList.add('scrolled');
+                    } else {
+                        navbar.classList.remove('scrolled');
+                    }
+                };
+
+                window.addEventListener('scroll', handleScroll);
+
+                return () => {
+                    window.removeEventListener('scroll', handleScroll);
+                };
+            }, []);
+
             const handleInputChange = (e) => {
                 setFormData({
                     ...formData,
@@ -622,6 +836,96 @@
 
             return (
                 <>
+                    {/* Navigation Header */}
+                    <nav className="navbar" id="navbar">
+                        <div className="navbar-container">
+                            <div className="navbar-logo" onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}>
+                                <img
+                                    src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNTAwIiBoZWlnaHQ9IjUwMCIgdmlld0JveD0iMCAwIDUwMCA1MDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjwhLS0gQmFja2dyb3VuZCBDaXJjbGUgLS0+CjxjaXJjbGUgY3g9IjI1MCIgY3k9IjI1MCIgcj0iMjQwIiBmaWxsPSIjMGExZTNkIi8+CjwhLS0gV2F0ZXIgRHJvcGxldCBTaGFwZSAtLT4KPHBhdGggZD0iTTI1MCA4MEMyNTAgODAgMTUwIDIwMCAxNTAgMjgwQzE1MCAzMzUuMjI4IDE5NC43NzIgMzgwIDI1MCAzODBDMzA1LjIyOCAzODAgMzUwIDMzNS4yMjggMzUwIDI4MEMzNTAgMjAwIDI1MCA4MCAyNTAgODBaIiBmaWxsPSIjNGE5ZmQ4IiBzdHJva2U9IiM2YmI4ZTgiIHN0cm9rZS13aWR0aD0iMyIvPgo8IS0tIFN0YXIgaW4gQ2VudGVyIC0tPgo8cGF0aCBkPSJNMjUwIDIwMEwyNjUgMjQwTDMwNSAyNDBMMjczIDI2M0wyODUgMzAzTDI1MCAyNzhMMjE1IDMwM0wyMjcgMjYzTDE5NSAyNDBMMjM1IDI0MEwyNTAgMjAwWiIgZmlsbD0iI2ZmZmZmZiIvPgo8IS0tIFByZXNzdXJlIExpbmVzIC0tPgo8cGF0aCBkPSJNMjAwIDE0MEMxODUgMTYwIDE3NSAxODUgMTcwIDIxMCIgc3Ryb2tlPSIjNmJiOGU4IiBzdHJva2Utd2lkdGg9IjMiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgb3BhY2l0eT0iMC42Ii8+CjxwYXRoIGQ9Ik0zMDAgMTQwQzMxNSAxNjAgMzI1IDE4NSAzMzAgMjEwIiBzdHJva2U9IiM2YmI4ZTgiIHN0cm9rZS13aWR0aD0iMyIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBvcGFjaXR5PSIwLjYiLz4KPCEtLSBUZXh0IC0tPgo8dGV4dCB4PSIyNTAiIHk9IjQzMCIgZm9udC1mYW1pbHk9IkFyaWFsLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjQ4IiBmb250LXdlaWdodD0iYm9sZCIgZmlsbD0iI2ZmZmZmZiIgdGV4dC1hbmNob3I9Im1pZGRsZSI+TE9ORVNUQVI8L3RleHQ+Cjx0ZXh0IHg9IjI1MCIgeT0iNDcwIiBmb250LWZhbWlseT0iQXJpYWwsIHNhbnMtc2VyaWYiIGZvbnQtc2l6ZT0iMjQiIGZpbGw9IiM2YmI4ZTgiIHRleHQtYW5jaG9yPSJtaWRkbGUiPkhZRFJPIFNPTFVUSU9OUzwvdGV4dD4KPC9zdmc+"
+                                    alt="LoneStar Hydro Solutions"
+                                />
+                            </div>
+
+                            <button
+                                className="navbar-toggle"
+                                id="navbarToggle"
+                                onClick={() => {
+                                    const toggle = document.getElementById('navbarToggle');
+                                    const menu = document.getElementById('navbarMenu');
+                                    toggle.classList.toggle('active');
+                                    menu.classList.toggle('active');
+                                }}
+                            >
+                                <span></span>
+                                <span></span>
+                                <span></span>
+                            </button>
+
+                            <ul className="navbar-menu" id="navbarMenu">
+                                <li>
+                                    <a
+                                        className="navbar-link"
+                                        onClick={() => {
+                                            window.scrollTo({ top: 0, behavior: 'smooth' });
+                                            document.getElementById('navbarMenu').classList.remove('active');
+                                            document.getElementById('navbarToggle').classList.remove('active');
+                                        }}
+                                    >
+                                        Home
+                                    </a>
+                                </li>
+                                <li>
+                                    <a
+                                        className="navbar-link"
+                                        onClick={() => {
+                                            document.getElementById('services').scrollIntoView({ behavior: 'smooth' });
+                                            document.getElementById('navbarMenu').classList.remove('active');
+                                            document.getElementById('navbarToggle').classList.remove('active');
+                                        }}
+                                    >
+                                        Services
+                                    </a>
+                                </li>
+                                <li>
+                                    <a
+                                        className="navbar-link"
+                                        onClick={() => {
+                                            document.getElementById('about').scrollIntoView({ behavior: 'smooth' });
+                                            document.getElementById('navbarMenu').classList.remove('active');
+                                            document.getElementById('navbarToggle').classList.remove('active');
+                                        }}
+                                    >
+                                        About
+                                    </a>
+                                </li>
+                                <li>
+                                    <a
+                                        className="navbar-link"
+                                        onClick={() => {
+                                            document.getElementById('contact').scrollIntoView({ behavior: 'smooth' });
+                                            document.getElementById('navbarMenu').classList.remove('active');
+                                            document.getElementById('navbarToggle').classList.remove('active');
+                                        }}
+                                    >
+                                        Contact
+                                    </a>
+                                </li>
+                                <li>
+                                    <button
+                                        className="navbar-cta"
+                                        onClick={() => {
+                                            document.getElementById('contact').scrollIntoView({ behavior: 'smooth' });
+                                            document.getElementById('navbarMenu').classList.remove('active');
+                                            document.getElementById('navbarToggle').classList.remove('active');
+                                        }}
+                                    >
+                                        Get a Quote
+                                    </button>
+                                </li>
+                            </ul>
+                        </div>
+                    </nav>
+
                     {/* Hero Section */}
                     <section className="hero">
                         <div className="star-pattern"></div>
